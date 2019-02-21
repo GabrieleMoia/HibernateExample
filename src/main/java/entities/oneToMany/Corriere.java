@@ -96,6 +96,9 @@ public class Corriere {
         return ordini;
     }
 
+    public void setOrdini(List<Ordine> ordini) {
+        this.ordini = ordini;
+    }
 
     //fa l'on delete set null
     @PreRemove

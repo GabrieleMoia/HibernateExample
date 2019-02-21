@@ -1,12 +1,9 @@
 package entities.oneToMany;
 
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
 import javax.persistence.*;
 
 @Entity
-@Table(name = "ordine")
+@Table(name = "ordine") // it works also for view with this name
 public class Ordine {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,7 +14,6 @@ public class Ordine {
     // the entities relationed for lazy they dug up the values when you effectively call them
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name="id_corriere")
-
     private Corriere corriere;
 
     @Column(name = "id_trasporto")
