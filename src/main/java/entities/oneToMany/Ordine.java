@@ -1,23 +1,28 @@
 package entities.oneToMany;
 
+import entities.manyToManyWithRel.Acquisto;
+
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "ordine") // it works also for view with this name
 public class Ordine {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_ordine")
+    @Column(name = "idOrdine")
     private int id;
 
     // one To one and many to one should be always lazy (the other are default lazy)--> eager load automatically
     // the entities relationed for lazy they dug up the values when you effectively call them
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name="id_corriere")
-    private Corriere corriere;
+    @JoinColumn(name="idUtente")
+    private Utente utente;
 
-    @Column(name = "id_trasporto")
-    private int id_trasporto;
+    @OneToMany(mappedBy = "primaryKey.ordine", cascade = CascadeType.ALL)
+    private List<Acquisto> acquisti = new ArrayList<Acquisto>();
+
 
     public Ordine(){
 
@@ -27,21 +32,23 @@ public class Ordine {
         return id;
     }
 
-    public Corriere getCorriere() {
-        return corriere;
+    public Utente getUtente() {
+        return utente;
     }
 
-    public void setCorriere(Corriere corriere) {
-        this.corriere = corriere;
+    public void setUtente(Utente utente) {
+        this.utente = utente;
     }
 
-    public int getId_trasporto() {
-        return id_trasporto;
+    public List<Acquisto> getAcquisto() {
+        return acquisti;
     }
 
-    public void setId_trasporto(int id_trasporto) {
-        this.id_trasporto = id_trasporto;
+    public void setAcquisto(List<Acquisto> acquisto) {
+        this.acquisti = acquisto;
     }
 
-
+    public void addAcquisto(Acquisto a){
+        acquisti.add(a);
+    }
 }

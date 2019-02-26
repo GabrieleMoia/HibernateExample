@@ -1,8 +1,9 @@
 package entities;
 
-import entities.manyToManyWithRel.Fornitore;
-import entities.manyToManyWithRel.Fornitura;
+import entities.manyToManyWithRel.Acquisto;
 import entities.manyToManyWithRel.Prodotto;
+import entities.oneToMany.Ordine;
+import entities.oneToMany.Utente;
 import org.junit.Test;
 import utils.TestUtil;
 
@@ -34,21 +35,21 @@ public class CrudOnManyToManyEntitiesWithRelationAttrubutes extends TestUtil {
 
     @Test
     public void insert1() {
-        Prodotto p = new Prodotto();
-        Fornitore f = new Fornitore("ciao");
-        Fornitura fornitura = new Fornitura();
-        fornitura.setFornitore(f);
-        fornitura.setProdotto(p);
-        fornitura.setDate(new Date());
-        fornitura.setQuantita(3);
-        p.addFornitura(fornitura);
+        Prodotto p = new Prodotto("Cellulare");
+        Utente u = new Utente("Marco","Moia");
+        Ordine o = new Ordine();
+        Acquisto acquisto = new Acquisto();
+        o.setUtente(u);
+        acquisto.setOrdine(o);
+        acquisto.setProdotto(p);
+        p.addAcquisto(acquisto);
         em.getTransaction().begin();
-        em.persist(f);
+        em.persist(o);
         em.persist(p);
         em.getTransaction().commit();
     }
 
-    @Test
+    /*@Test
     public void insert2() {
         Prodotto p = new Prodotto();
         Fornitore f = new Fornitore("ciao");
@@ -62,41 +63,45 @@ public class CrudOnManyToManyEntitiesWithRelationAttrubutes extends TestUtil {
         em.persist(p);
         em.persist(f);
         em.getTransaction().commit();
-    }
+    }*/
 
     @Test
     public void insertAlreadyExisting() {
         Prodotto p = getProdotto(1);
-        Fornitore f = getFornitore(3);
-        Fornitura fornitura = new Fornitura();
-        fornitura.setFornitore(f);
-        fornitura.setProdotto(p);
-        fornitura.setDate(new Date());
-        fornitura.setQuantita(3);
+        Ordine o = getOrdine(21);
+        Acquisto acquisto = new Acquisto();
+        acquisto.setProdotto(p);
+        acquisto.setOrdine(o);
         em.getTransaction().begin();
-        em.persist(fornitura);
+        em.persist(acquisto);
         em.getTransaction().commit();
     }
 
     //cancella anche dalla tabella di relazione
-    @Test
-    public void testDeleteFornitore() {
-        Fornitore f = em.find(Fornitore.class, 2);
+    /*@Test
+    public void testDeleteOrdine() {
+        Ordine f = em.find(Ordine.class, 21);
         em.getTransaction().begin();
         em.remove(f);
         em.getTransaction().commit();
-    }
+    }*/
 
     //se si us il mapped anziche il join column si rompe quando cerchi di cancellare l'entità perchè violi i vincoli di chiave esterna
     @Test
     public void testDeleteProdotto() {
-        Prodotto p = em.find(Prodotto.class, 3);
+        /*Prodotto p = em.find(Prodotto.class, 1);
         em.getTransaction().begin();
         em.remove(p);
+        em.getTransaction().commit();*/
+
+        Query query = em.createQuery("delete From Prodotto c  WHERE c.id=:id");
+        query.setParameter("id", 1);
+        em.getTransaction().begin();
+        query.executeUpdate();
         em.getTransaction().commit();
     }
 
-    @Test
+    /*@Test
     public void select() {
 
         Prodotto p = getProdotto(1);
@@ -104,7 +109,7 @@ public class CrudOnManyToManyEntitiesWithRelationAttrubutes extends TestUtil {
         list.forEach(x -> {
             System.out.println(x.getFornitore().getId());
         });
-    }
+    }*/
 
 
     private Prodotto getProdotto(int id) {
@@ -118,13 +123,13 @@ public class CrudOnManyToManyEntitiesWithRelationAttrubutes extends TestUtil {
         return null;
     }
 
-    private Fornitore getFornitore(int id) {
-        Query query = em.createQuery("select f From Fornitore f WHERE f.id=:id");
+    private Ordine getOrdine(int id) {
+        Query query = em.createQuery("select o From Ordine o WHERE o.id=:id");
         query.setParameter("id", id);
         List results = query.getResultList();
         if (!results.isEmpty()) {
-            Fornitore fornitore = (Fornitore) results.get(0);
-            return fornitore;
+            Ordine ordine = (Ordine) results.get(0);
+            return ordine;
         }
         return null;
     }

@@ -1,7 +1,7 @@
 package entities;
 
-import entities.oneToMany.Corriere;
 import entities.oneToMany.Ordine;
+import entities.oneToMany.Utente;
 import org.junit.Test;
 import utils.TestUtil;
 
@@ -13,7 +13,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /***
- * Tested on 1 to many relation of Corriere(1) -> ordine(n)
+ * Tested on 1 to many relation of Utente(1) -> ordine(n)
  */
 public class CrudOnOneToManyEntities extends TestUtil {
 
@@ -21,24 +21,17 @@ public class CrudOnOneToManyEntities extends TestUtil {
     //persistere prima gli ordini atrimenti va in errore
     @Test
     public void insert() {
-        Corriere cor1 = new Corriere("c1", "via", "citta", "6/a", "20861");
-        Corriere cor2 = new Corriere("c2", "viale", "paese", "6/c", "20800");
+        Utente utente = new Utente("Gabriele", "Moia");
+        Utente utente1 = new Utente("Stefano", "Liberato");
         Ordine o1 = new Ordine();
         Ordine o2 = new Ordine();
         Ordine o3 = new Ordine();
         Ordine o4 = new Ordine();
 
-        o1.setId_trasporto(20);
-        o1.setCorriere(cor1);
-
-        o2.setId_trasporto(19);
-        o2.setCorriere(cor1);
-
-        o3.setId_trasporto(17);
-        o3.setCorriere(cor2);
-
-        o4.setId_trasporto(11);
-
+        o1.setUtente(utente);
+        o2.setUtente(utente);
+        o3.setUtente(utente1);
+        o4.setUtente(utente1);
 
         try {
 
@@ -47,9 +40,6 @@ public class CrudOnOneToManyEntities extends TestUtil {
             em.persist(o2);
             em.persist(o3);
             em.persist(o4);
-
-          //  em.persist(cor1);
-            //em.persist(cor2);
 
             em.getTransaction().commit();
 
@@ -62,43 +52,24 @@ public class CrudOnOneToManyEntities extends TestUtil {
     //non scrive gli ordini (parte ad N della relazione)
     @Test
     public void insert2() {
-        Corriere cor1 = new Corriere("c1", "via", "citta", "6/a", "20861");
-        Corriere cor2 = new Corriere("c2", "viale", "paese", "6/c", "20800");
+        Utente utente = new Utente("Mario", "Rossi");
+        Utente utente1 = new Utente("Giulio", "Bianchi");
         Ordine o1 = new Ordine();
         Ordine o2 = new Ordine();
         Ordine o3 = new Ordine();
         Ordine o4 = new Ordine();
-
-        o1.setId_trasporto(20);
-
-
-        o2.setId_trasporto(19);
-
-
-        o3.setId_trasporto(17);
-
-
-        o4.setId_trasporto(11);
 
         List<Ordine> list =new ArrayList<>();
 
         list.add(o1);
         list.add(o3);
 
-        cor1.setOrdini(list);
-
+        utente.setOrdini(list);
 
         try {
-
             em.getTransaction().begin();
-
-            em.persist(cor1);
-
-            //  em.persist(cor1);
-            //em.persist(cor2);
-
+            em.persist(utente);
             em.getTransaction().commit();
-
         } catch (Exception e) {
             System.out.println("Errore: " + e.getMessage());
             em.getTransaction().rollback();
@@ -107,7 +78,7 @@ public class CrudOnOneToManyEntities extends TestUtil {
 
     //con id non esistente restituisce una lista vuota
     // ze viene fatto il close dell'entity manager i valori della relazione presi in modo lazy non possono essere letti
-    @Test
+    /*@Test
     public void selectOrdiniDiCorriere() {
         Query query = em.createQuery("select c From Corriere c WHERE c.id=:id");
        // Query query = em.createQuery("select c From Corriere c JOIN FETCH c.ordini WHERE c.id=:id"); da usare per avere le relazioni anche quando lazy e con entity manager chiuso
@@ -119,38 +90,46 @@ public class CrudOnOneToManyEntities extends TestUtil {
             assertNotNull(corriere.getOrdini().get(0).getId());
         }
 
-    }
+    }*/
 
     @Test
     public void selectCorriereDiOrdine() {
         Query query = em.createQuery("select o From Ordine o WHERE o.id=:id");
-        query.setParameter("id", 2);
+        query.setParameter("id", 6);
         List results = query.getResultList();
         em.close();
         if (!results.isEmpty()) {
             Ordine ordine = (Ordine) results.get(0);
             //se usi il debug il corriere sembra a caso ma quando chiami il to string è quello giusto (LAZY)
-            Corriere corriere = ordine.getCorriere();
-            System.out.println("corriere: " + corriere.toString());
-            assertNotNull(corriere.getId());
+            Utente utente = ordine.getUtente();
+            System.out.println("id_utente: " + utente.getId());
+            assertNotNull(utente.getId());
         }
-
     }
 
     @Test
     public void updateTest() {
-        /*Query query = em.createQuery("delete From Corriere c  WHERE c.id=:id");
-        query.setParameter("id", 1);
+        Query query = em.createQuery("delete From Utente c  WHERE c.id=:id");
+        query.setParameter("id", 13);
         em.getTransaction().begin();
         query.executeUpdate();
-        em.getTransaction().commit();*/
-        Corriere c = em.find(Corriere.class, 100);
-        super.closeEm();
-        super.getEM();
-        em.getTransaction().begin();
-        em.remove(c);
         em.getTransaction().commit();
     }
 
+    void flushAndClear() {
+        em.flush();
+        em.clear();
+    }
 
+    @Test
+    public void getUtentiinEm(){
+        for(int i = 12; i < 100; i++){
+            em.getTransaction().begin();
+            Utente u = em.find(Utente.class, i);
+            em.getTransaction().commit();
+            if(u != null) {
+                System.out.println(u.getId());
+            }
+        }
+    }
 }

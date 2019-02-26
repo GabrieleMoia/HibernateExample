@@ -1,5 +1,7 @@
 package entities.manyToManyWithRel;
 
+import entities.oneToMany.Ordine;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
@@ -7,18 +9,18 @@ import javax.persistence.ManyToOne;
 import java.io.Serializable;
 
 @Embeddable // with this annotation this class can be embedded in other classes
-public class FornitoreProdottoKey implements Serializable {
+public class OrdineProdottoKey implements Serializable {
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Fornitore fornitore;
+    private Ordine ordine;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Prodotto prodotto;
 
-    public Fornitore getFornitore() {
-        return fornitore;
+    public Ordine getOrdine() {
+        return ordine;
     }
 
-    public void setFornitore(Fornitore fornitore) {
-        this.fornitore = fornitore;
+    public void setOrdine(Ordine ordine) {
+        this.ordine = ordine;
     }
 
     public Prodotto getProdotto() {

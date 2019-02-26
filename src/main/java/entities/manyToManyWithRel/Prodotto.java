@@ -9,11 +9,14 @@ import java.util.List;
 public class Prodotto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_prodotto")
+    @Column(name = "idProdotto")
     private int id;
 
+    @Column (name="nome")
+    private String nome;
+
     @OneToMany(mappedBy = "primaryKey.prodotto", cascade = CascadeType.ALL)
-    private List<Fornitura> forniture =new ArrayList<Fornitura>();
+    private List<Acquisto> acquisti =new ArrayList<Acquisto>();
 
     public int getId() {
         return id;
@@ -22,15 +25,27 @@ public class Prodotto {
     public Prodotto() {
     }
 
-    public List<Fornitura> getForniture() {
-        return forniture;
+    public Prodotto(String nome) {
+        this.nome = nome;
+    }
+    public Prodotto(int id){
+        return;
+    }
+    public String getNome(){
+        return nome;
     }
 
-    public void setForniture(List<Fornitura> forniture) {
-        this.forniture = forniture;
+    public void setNome(String nome){this.nome = nome;}
+
+    public List<Acquisto> getAcquisti() {
+        return acquisti;
     }
 
-    public void addFornitura(Fornitura f){
-        forniture.add(f);
+    public void setAcquisti(List<Acquisto> acquisti) {
+        this.acquisti = acquisti;
+    }
+
+    public void addAcquisto (Acquisto a){
+        acquisti.add(a);
     }
 }
